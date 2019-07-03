@@ -1,5 +1,7 @@
 # NumSwift
 
+**Work in progress**
+
 Create and manipulate tensors
 
 Non-optimised tensor manipulation trying to be like Python's NumPy. In no way should this be used in production. Just can't believe Swift hasn't got its own yet.
