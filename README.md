@@ -47,9 +47,31 @@ Some operations that you can do:
 ```swift
 let p = a + 1
 print(p)
+// array([[[2, 2],
+//         [2, 2],
+//         [2, 2],
+//         [2, 2]]])
 
 let q = NumSwift.randint(1,5,(2,3,2)) + NumSwift.ones((2,3,2)) * 2
 print(q)
+// array([[[6, 5],
+//         [4, 3],
+//         [6, 7],
+//
+//        [[7, 7],
+//         [7, 6],
+//         [6, 7]]])
+
+let x = NumSwift.randint(1,5,(2,3,2))
+let y = NumSwift.zeros((2,3,2))
+print(x + y)
+// array([[[4, 1],
+//         [3, 4],
+//         [4, 1],
+//
+//        [[3, 4],
+//         [1, 5],
+//         [4, 3]]])
 
 let t = NumSwift.randint(1,9,(2,3,6))
 print("Tensor:\n\(t)")
