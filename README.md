@@ -6,11 +6,11 @@ Naïve and non-optimised tensor manipulation whose underlying operations are sim
 
 ## Downloading
 
-You can download this repo and play with in Xcode's Playground.
+You can download this repo and play with it in Xcode's Playground.
 
 ## Usage
 
-The APIs are designed to mimic those from NumPy's. Here are the ways you can initialise:
+The APIs are designed to mimic those from NumPy. Here are the ways you can initialise:
 
 ```swift
 let a = NumSwift.ones((1,4,2))
@@ -74,6 +74,6 @@ print(q)
 
 ## Documentation
 
-One thing I like about Swift is that your documentations are generated on the fly. Here's mine:
+One thing I like about Swift is that with some Markdown, your documentations are generated on the fly. Here's mine:
 
 ![Documentation](docs.png)
