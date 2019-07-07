@@ -65,7 +65,7 @@ func reshape_1_to_5(_ arr: Arr1DInt, shape: Tuple5DInt) -> Arr5DInt {
 
 /// Create and manipulate 1D, 2D, 3D, 4D and 5D tensors.
 ///
-/// Naïve and non-optimised tensor manipulation whose underlying operations are simply `Array` operations. Hoping to create something like Python's NumPy (who am I kidding 😆?). `NumSwift` supports printing of tensors.
+/// Naïve and non-optimised tensor manipulation whose underlying operations are simply `Array` operations. Hoping to create something like Python's NumPy (who am I kidding 😆?).
 ///
 /// - Important: Only supports 1D and 2D operations
 ///

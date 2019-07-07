@@ -2,7 +2,7 @@
 
 Create and manipulate 1D, 2D, 3D, 4D and 5D tensors.
 
-Naïve and non-optimised tensor manipulation whose underlying operations are simply `Array` operations. Hoping to create something like Python's NumPy (who am I kidding 😆?). `NumSwift` supports printing of tensors.
+Naïve and non-optimised tensor manipulation whose underlying operations are simply `Array` operations. Hoping to create something like Python's NumPy (who am I kidding 😆?).
 
 ## Downloading
 
@@ -54,7 +54,8 @@ print(q)
 
 ## Features
 
-- [x] Printing
+- [x] Pretty printing (for 1D to 3D tensors)
+- [ ] Pretty printing (for 4D to 5D tensors)
 - [x] Broadcasting
 - [x] Subscriptable
 - [x] Flattening
@@ -66,14 +67,14 @@ print(q)
 - [ ] Support for `Float` operations
 - [ ] Dot product
 
-## Operator overloading
+## Operator Overloading
 
 - addition, `+`
 - subtraction, `-`
 - multiplication, `*`
 
-## Documentation
+## Bonus: Pretty Documentation
 
-One thing I like about Swift is that with some Markdown, your documentations are generated on the fly. Here's mine:
+One thing I like about Swift is that with some Markdown, your documentations are generated on the fly. In Playgrounds, click on the NumSwift `struct` definition to see the following:
 
 ![Documentation](docs.png)
