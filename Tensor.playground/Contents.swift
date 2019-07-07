@@ -14,214 +14,257 @@ extension Array {
     /// Expand dimensions on OUTER layer
     ///
     ///     let arr = [[4,3,5],[1,0,0]]
-    ///     print(arr.expandDim())
+    ///     print(arr.expandDim())  # [[[4,3,5],[1,0,0]]]
     func expandDim() -> [[Element]] {
         return [self]
     }
 }
 
-protocol TensorBase {
-    var dim: Int { get }
-}
+typealias Arr1DInt = [Int]
+typealias Arr2DInt = [[Int]]
+typealias Arr3DInt = [[[Int]]]
+typealias Arr4DInt = [[[[Int]]]]
+typealias Arr5DInt = [[[[[Int]]]]]
 
+typealias Arr1DFloat = [Float32]
+typealias Arr2DFloat = [[Float32]]
+typealias Arr3DFloat = [[[Float32]]]
+typealias Arr4DFloat = [[[[Float32]]]]
+typealias Arr5DFloat = [[[[[Float32]]]]]
 
-typealias Arr1D = [Int]
-typealias Arr2D = [[Int]]
-typealias Arr3D = [[[Int]]]
-typealias Arr4D = [[[[Int]]]]
-typealias Arr5D = [[[[[Int]]]]]
+typealias Tuple2DInt = (Int,Int)
+typealias Tuple3DInt = (Int,Int,Int)
+typealias Tuple4DInt = (Int,Int,Int,Int)
+typealias Tuple5DInt = (Int,Int,Int,Int,Int)
 
-
-func reshape_1_to_2(_ arr: Arr1D, shape: (Int,Int)) -> Arr2D {
+/// Reshape a 1D NumSwift tensor to a 2D NumSwift tensor
+func reshape_1_to_2(_ arr: Arr1DInt, shape: Tuple2DInt) -> Arr2DInt {
     return arr.chunked(by: shape.1)
 }
-func reshape_1_to_3(_ arr: Arr1D, shape: (Int,Int,Int)) -> Arr3D {
+
+/// Reshape a 1D NumSwift tensor to a 3D NumSwift tensor
+func reshape_1_to_3(_ arr: Arr1DInt, shape: Tuple3DInt) -> Arr3DInt {
     return arr.chunked(by: shape.2)
         .chunked(by: shape.1)
 }
-func reshape_1_to_4(_ arr: Arr1D, shape: (Int,Int,Int,Int)) -> Arr4D {
+
+/// Reshape a 1D NumSwift tensor to a 4D NumSwift tensor
+func reshape_1_to_4(_ arr: Arr1DInt, shape: Tuple4DInt) -> Arr4DInt {
     return arr.chunked(by: shape.3)
         .chunked(by: shape.2)
         .chunked(by: shape.1)
 }
-func reshape_1_to_5(_ arr: Arr1D, shape: (Int,Int,Int,Int,Int)) -> Arr5D {
+
+/// Reshape a 1D NumSwift tensor to a 5D NumSwift tensor
+func reshape_1_to_5(_ arr: Arr1DInt, shape: Tuple5DInt) -> Arr5DInt {
     return arr.chunked(by: shape.4)
         .chunked(by: shape.3)
         .chunked(by: shape.2)
         .chunked(by: shape.1)
 }
 
-
-/// Create and manipulate tensors
+/// Create and manipulate 1D, 2D, 3D, 4D and 5D tensors.
 ///
-/// Non-optimised tensor manipulation trying to be like Python's NumPy. In no way should this be used in production. This is to show that Swift can somehow do it too.
+/// Naïve and non-optimised tensor manipulation whose underlying operations are simply `Array` operations. Hoping to create something like Python's NumPy (who am I kidding 😆?). `NumSwift` supports printing of tensors.
 ///
-/// - important: Only supports 1D and 2D operations
+/// - Important: Only supports 1D and 2D operations
 ///
 /// # Ways to initialise
 ///
-///     a = Tensor.ones((1,4,2))
-///     b = Tensor.zeros((3,9))
-///     c = Tensor([1,2,3,4], shape_this: (3,9))
-///     d = Tensor([2,4]) # 1D array
-///     Tensor.arange(7)
-///     Tensor.arange(3,6)
-///     Tensor.rand((8,1,2))
+///     let a = NumSwift.ones((1,4,2))
+///     // array([[[1, 1],
+///     //         [1, 1],
+///     //         [1, 1],
+///     //         [1, 1]]])
 ///
-/// # Arithmetics
+///     let b = NumSwift.zeros((3,9))
+///     // array([[0, 0, 0, 0, 0, 0, 0, 0, 0],
+///     //        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+///     //        [0, 0, 0, 0, 0, 0, 0, 0, 0]])
+///
+///     let c = NumSwift([1,2,3,4], shape: (2,2))
+///     // array([[1, 2],
+///     //        [3, 4]])
+///
+///     let d = NumSwift.arange(7)
+///     // array([0, 1, 2, 3, 4, 5, 6])
+///
+///     let e = NumSwift.arange(3,6)
+///     // array([3, 4, 5])
+///
+///     let f = NumSwift.randint(1,10,(2,5))
+///     // array([[5, 10, 1, 6, 4],
+///     //        [4, 2, 10, 6, 9]])
+///
+///     let g = NumSwift([2,4])
+///     // array([2, 4])
+///
+/// # Operations
 ///
 /// Element-wise addition
 ///
-///     a + b
+///     let add = a + b
+///     print(add)
 ///
 /// Element-wise multiplication
 ///
-///     a * b
+///     let mul = a * b
+///     print(mul)
 ///
 /// Broadcasting
 ///
-///     a + 1
-///     b * 8
+///     let bcast1 = a + 1
+///     let bcast2 = b * 8
+///     print(bcast1)
+///     print(bcast2)
 ///
-/// Matrix multiplication
+/// Operator overloading:
 ///
-///     Tensor.matmul(a,b)
+/// - addition, `+`
+/// - subtraction, `-`
+/// - multiplication, `*`
 ///
-struct Tensor: CustomStringConvertible {
+struct NumSwift: CustomStringConvertible {
     
     /// 1D INTEGER arrays for now
     ///
     /// - ToDo:
     ///     - Double type
-    var arr1D: Arr1D = [0]
-    var arr2D: Arr2D = [[0]]
-    var arr3D: Arr3D = [[[0]]]
-    var arr4D: Arr4D = [[[[0]]]]
-    var arr5D: Arr5D = [[[[[0]]]]]
+    var arr1D: Arr1DInt = [0]
+    var arr2D: Arr2DInt = [[0]]
+    var arr3D: Arr3DInt = [[[0]]]
+    var arr4D: Arr4DInt = [[[[0]]]]
+    var arr5D: Arr5DInt = [[[[[0]]]]]
     
     /// Shape of array
-    let shape: [Int]
+    let shape_: [Int]
     
     /// No. of dimensions of array
     let dim: Int
     
-    /// Initialise a 1D array
-    ///
-    ///     let a = Tensor([1,2,3])
-    ///     let b = Tensor([-1,8,9])
-    init(_ arr: Arr1D) {
-        self.arr1D = arr
-        self.shape = [arr.count]
-        self.dim = shape.count
-//        self.arr = test
-    }
-    
-    /// Initialise a 2D, 3D, 4D or 5D array with shape
-    init<T>(_ preArr: Arr1D, shape_this: T) {
-        self.arr1D = preArr
-        self.shape = [0]
-        self.dim = Mirror(reflecting: shape_this).children.count
+    /// Initialise a 1D, 2D, 3D, 4D or 5D `NumSwift` tensor
+    init<Tuple>(_ object: Arr1DInt, shape: Tuple) {
+        self.arr1D = object
+        self.shape_ = [0]
+        self.dim = Mirror(reflecting: shape).children.count
         if self.dim == 2 {
-            self.arr2D = reshape_1_to_2(preArr, shape: shape_this as! (Int,Int))
+            self.arr2D = reshape_1_to_2(object, shape: shape as! (Int,Int))
         } else if self.dim == 3 {
-            self.arr3D = reshape_1_to_3(preArr, shape: shape_this as! (Int,Int,Int))
+            self.arr3D = reshape_1_to_3(object, shape: shape as! (Int,Int,Int))
         } else if self.dim == 4 {
-            self.arr4D = reshape_1_to_4(preArr, shape: shape_this as! (Int,Int,Int,Int))
+            self.arr4D = reshape_1_to_4(object, shape: shape as! (Int,Int,Int,Int))
         } else if self.dim == 5 {
-            self.arr5D = reshape_1_to_5(preArr, shape: shape_this as! (Int,Int,Int,Int,Int))
+            self.arr5D = reshape_1_to_5(object, shape: shape as! (Int,Int,Int,Int,Int))
         } else {
             print("Not supported")
         }
     }
     
-    /// Initialise a 2D array
-    init(_ arr: Arr2D) {
-        self.arr2D = arr
-        self.shape = [2,2]
+    /// Initialise a 1D `NumSwift` tensor
+    ///
+    ///     let ns = NumSwift([1,2,3])
+    init(_ object: Arr1DInt) {
+        self.arr1D = object
+        self.shape_ = [2,2]
+        self.dim = 1
+    }
+    
+    /// Initialise a 2D `NumSwift` tensor
+    ///
+    ///     let ns = NumSwift([[1,2,3],[4,5,6]])
+    init(_ object: Arr2DInt) {
+        self.arr2D = object
+        self.shape_ = [2,2]
         self.dim = 2
     }
     
-    /// Initialise a 3D array
-    init(_ arr: Arr3D) {
-        self.arr3D = arr
-        self.shape = [2,2]
+    /// Initialise a 3D `NumSwift` tensor
+    init(_ object: Arr3DInt) {
+        self.arr3D = object
+        self.shape_ = [2,2]
         self.dim = 3
     }
     
-    /// Initialise a 4D array
-    init(_ arr: Arr4D) {
-        self.arr4D = arr
-        self.shape = [2,2]
+    /// Initialise a 4D `NumSwift` tensor
+    init(_ object: Arr4DInt) {
+        self.arr4D = object
+        self.shape_ = [2,2]
         self.dim = 4
     }
     
-    /// Initialise a 5D array
-    init(_ arr: Arr5D) {
-        self.arr5D = arr
-        self.shape = [2,2]
+    /// Initialise a 5D `NumSwift` tensor
+    init(_ object: Arr5DInt) {
+        self.arr5D = object
+        self.shape_ = [2,2]
         self.dim = 5
     }
-
     
     func indexIsValid(index: Int) -> Bool {
         return index >= 0 && index < arr1D.count
     }
     
-//    subscript(_ index: Int) -> Int {
-//        get {
-////            assert(indexIsValid(index: index), "Index out of range")
-//            return arr1[index]
-//        }
-//        set {
-////            assert(indexIsValid(index: index), "Index out of range")
-//            arr1[index] = newValue
-//        }
-//    }
+    /// Flattens to a 1D `NumSwift` tensor
+    ///
+    /// - Returns:
+    ///     A 1D `NumSwift` tensor
+    func flatten() -> NumSwift {
+        let finalArr: Arr1DInt
+        
+        switch (self.dim) {
+        case 1: finalArr = arr1D
+        case 2: finalArr = arr2D.flatMap { $0 }
+        case 3: finalArr = arr3D.flatMap { $0 }.flatMap { $0 }
+        case 4: finalArr = arr4D.flatMap { $0 }.flatMap { $0 }.flatMap { $0 }
+        default: finalArr = arr5D.flatMap { $0 }.flatMap { $0 }.flatMap { $0 }.flatMap { $0 }
+        }
+        
+        return NumSwift(finalArr)
+    }
     
     subscript(_ index1: Int, _ index2: Int) -> Int {
         get {
-            assert(self.dim == 2, "wrong")
+            assert(self.dim == 2, "Dimension must be 2")
             return arr2D[index1][index2]
         }
         set {
-            assert(self.dim == 2, "wrong")
+            assert(self.dim == 2, "Dimension must be 2")
             arr2D[index1][index2] = newValue
         }
     }
     subscript(_ index1: Int, _ index2: Int, _ index3: Int) -> Int {
         get {
-            assert(self.dim == 3, "wrong")
+            assert(self.dim == 3, "Dimension must be 3")
             return arr3D[index1][index2][index3]
         }
         set {
-            assert(self.dim == 3, "wrong")
+            assert(self.dim == 3, "Dimension must be 3")
             arr3D[index1][index2][index3] = newValue
         }
     }
     subscript(_ index1: Int, _ index2: Int, _ index3: Int, _ index4: Int) -> Int {
         get {
-            assert(self.dim == 4, "wrong")
+            assert(self.dim == 4, "Dimension must be 4")
             return arr4D[index1][index2][index3][index4]
         }
         set {
-            assert(self.dim == 4, "wrong")
+            assert(self.dim == 4, "Dimension must be 4")
             arr4D[index1][index2][index3][index4] = newValue
         }
     }
     subscript(_ index1: Int, _ index2: Int, _ index3: Int, _ index4: Int, _ index5: Int) -> Int {
         get {
-            assert(self.dim == 5, "wrong")
+            assert(self.dim == 5, "Dimension must be 5")
             return arr5D[index1][index2][index3][index4][index5]
         }
         set {
-            assert(self.dim == 5, "wrong")
+            assert(self.dim == 5, "Dimension must be 5")
             arr5D[index1][index2][index3][index4][index5] = newValue
         }
     }
     
-    let space = "       "
     /// Print function for 1D array from `CustomStringConvertible` protocol
     var description: String {
+        let space = "       "
         var str: String = "array("
         
         switch (self.dim) {
@@ -269,76 +312,94 @@ struct Tensor: CustomStringConvertible {
         return str
     }
     
-    /// Initialise an array of ones with a given shape
-    ///
-    /// - ToDo:
-    ///     - remove placeholder
-    /// - Parameters:
-    ///     - shape: eh sup
-//    static func ones(_ shape: [Int]) -> Tensor {
-//        let numElements = shape.reduce(1,*)
-//        let arr = Array(repeating: 1, count: numElements)
-//        return Tensor(arr, shape: shape)
-//    }
-    
     /// Initialise an array of zeros with a given shape
     ///
     /// - Parameters:
-    ///     - shape: eh sup
-//    static func zeros(_ shape: [Int]) -> Tensor {
-//        let numElements = shape.reduce(1,*)
-//        let arr = Array(repeating: 0, count: numElements)
-//        return Tensor(arr, shape: shape)
-//    }
-    
-    /// Initialise an array of zeros with a given shape
-    ///
-    /// - Parameters:
-    ///     - shape: eh sup
-    static func zeros<T>(_ shape: T) -> Tensor {
+    ///     - shape: a tuple of ints
+    /// - Returns:
+    ///     A `NumSwift` tensor of given shape
+    static func zeros<Tuple>(_ shape: Tuple) -> NumSwift {
         let numElements = Mirror(reflecting: shape).children.map {$1 as! Int}.reduce(1,*)
         let arr = Array(repeating: 0, count: numElements)
-        return Tensor(arr, shape_this: shape)
+        return NumSwift(arr, shape: shape)
     }
     
-    static func ones<T>(_ shape: T) -> Tensor {
+    /// Initialise an array of ones with a given shape
+    ///
+    /// - Parameters:
+    ///     - shape: a tuple of ints
+    /// - Returns:
+    ///     A `NumSwift` tensor of given shape
+    static func ones<Tuple>(_ shape: Tuple) -> NumSwift {
         let numElements = Mirror(reflecting: shape).children.map {$1 as! Int}.reduce(1,*)
         let arr = Array(repeating: 1, count: numElements)
-        return Tensor(arr, shape_this: shape)
+        return NumSwift(arr, shape: shape)
     }
     
-    static func arange(_ end: Int) -> Tensor {
-        return Tensor(Array(0...end))
+    /// Initialise an array of integers from 0 up to but not including `stop`
+    ///
+    /// - Parameters:
+    ///     - stop: The upper bound
+    /// - Returns:
+    ///     A 1D `NumSwift` tensor
+    static func arange(_ stop: Int) -> NumSwift {
+        return NumSwift(Array(0..<stop))
     }
     
-    static func arange(_ start: Int, _ end: Int) -> Tensor {
-        return Tensor(Array(start...end))
+    /// Initialise an array of integers from `start` up to but not including `stop`
+    ///
+    /// - Parameters:
+    ///     - start: The lower bound
+    ///     - stop: The upper bound
+    /// - Returns:
+    ///     A 1D `NumSwift` tensor
+    static func arange(_ start: Int, _ stop: Int) -> NumSwift {
+        return NumSwift(Array(start..<stop))
     }
     
-    static func rand<T>(_ shape: T) -> Tensor {
-        let numElements = Mirror(reflecting: shape).children.map {$1 as! Int}.reduce(1,*)
-        let arr = Array(repeating: 9, count: numElements)
-        return Tensor(arr, shape_this: shape)
+    /// Initialise a tensor of shape `size` of random integers from 0 up to but not including `stop`.
+    /// Similar to `numpy.random.randint()` API.
+    ///
+    /// - Parameters:
+    ///     - high: The upper bound of range of random integers
+    ///     - size: Size of tensor, in `Tuple`
+    /// - Returns:
+    ///     A `NumSwift` tensor of given shape
+    static func randint<Tuple>(_ high: Int, _ size: Tuple) -> NumSwift {
+        let numElements = Mirror(reflecting: size).children.map {$1 as! Int}.reduce(1,*)
+        let arr = (1...numElements).map( {_ in Int.random(in: 0...high)} )
+        return NumSwift(arr, shape: size)
     }
     
-    static func matmul(_ lhs: Tensor, _ rhs: Tensor) -> Tensor {
-        return lhs * rhs
+    /// Initialise a tensor of shape `size` of random integers from 0 up to but not including `stop`.
+    /// Similar to `numpy.random.randint()` API.
+    ///
+    /// - Parameters:
+    ///     - low: The lower bound of range of random integers
+    ///     - high: The upper bound of range of random integers
+    ///     - size: Size of tensor, in `Tuple`
+    /// - Returns:
+    ///     A `NumSwift` tensor of given shape
+    static func randint<Tuple>(_ low: Int, _ high: Int, _ size: Tuple) -> NumSwift {
+        let numElements = Mirror(reflecting: size).children.map {$1 as! Int}.reduce(1,*)
+        let arr = (1...numElements).map( {_ in Int.random(in: low...high)} )
+        return NumSwift(arr, shape: size)
     }
 }
 
 
 /// Overloading element-wise addition
-func + (lhs: Tensor, rhs: Tensor) -> Tensor {
+func + (lhs: NumSwift, rhs: NumSwift) -> NumSwift {
     switch (lhs.dim) {
     case 1:
-        return Tensor(
+        return NumSwift(
             zip(lhs.arr1D, rhs.arr1D).map(+))
     case 2:
-        return Tensor(
+        return NumSwift(
             zip(lhs.arr2D, rhs.arr2D).map {
                 zip($0, $1).map(+)})
     default:
-        return Tensor(
+        return NumSwift(
             zip(lhs.arr3D, rhs.arr3D).map {
                 zip($0, $1).map {
                     zip($0, $1).map(+)}})
@@ -346,62 +407,49 @@ func + (lhs: Tensor, rhs: Tensor) -> Tensor {
 }
 
 /// Overloading element-wise subtraction
-func - (lhs: Tensor, rhs: Tensor) -> Tensor {
+func - (lhs: NumSwift, rhs: NumSwift) -> NumSwift {
     return lhs + rhs * -1
 }
 
 /// Overloading add operation for 1D broadcasting
-func + (lhs: Tensor, rhs: Int) -> Tensor {
+func + (lhs: NumSwift, rhs: Int) -> NumSwift {
     switch (lhs.dim) {
     case 1:
-        return Tensor(lhs.arr1D.map {$0 + rhs})
+        return NumSwift(lhs.arr1D.map {$0 + rhs})
     case 2:
-        return Tensor(lhs.arr2D.map {$0.map {$0 + rhs}})
+        return NumSwift(lhs.arr2D.map {$0.map {$0 + rhs}})
     default:
-        return Tensor(lhs.arr3D.map {$0.map {$0.map {$0 + rhs}}})
+        return NumSwift(lhs.arr3D.map {$0.map {$0.map {$0 + rhs}}})
     }
 }
 
 /// Overloading multiply operation
-func * (lhs: Tensor, rhs: Tensor) -> Tensor {
+func * (lhs: NumSwift, rhs: NumSwift) -> NumSwift {
     switch (lhs.dim) {
     case 1:
-        return Tensor(
+        return NumSwift(
             zip(lhs.arr1D, rhs.arr1D).map (*))
     case 2:
-        return Tensor(
+        return NumSwift(
             zip(lhs.arr2D, rhs.arr2D).map {zip($0, $1).map(*)})
     default:
-        return Tensor(
+        return NumSwift(
             zip(lhs.arr3D, rhs.arr3D).map {zip($0, $1).map {zip($0, $1).map(*)}})
     }
 }
 
 /// Overloading multiply operation with broadcasting
-func * (lhs: Tensor, rhs: Int) -> Tensor {
+func * (lhs: NumSwift, rhs: Int) -> NumSwift {
     switch (lhs.dim) {
     case 1:
-        return Tensor(lhs.arr1D.map {$0 * rhs})
+        return NumSwift(lhs.arr1D.map {$0 * rhs})
     case 2:
-        return Tensor(lhs.arr2D.map {$0.map {$0 * rhs}})
+        return NumSwift(lhs.arr2D.map {$0.map {$0 * rhs}})
     case 3:
-        return Tensor(lhs.arr3D.map {$0.map {$0.map {$0 * rhs}}})
+        return NumSwift(lhs.arr3D.map {$0.map {$0.map {$0 * rhs}}})
     case 4:
-        return Tensor(lhs.arr4D.map {$0.map {$0.map {$0.map {$0 * rhs}}}})
+        return NumSwift(lhs.arr4D.map {$0.map {$0.map {$0.map {$0 * rhs}}}})
     default:
-        return Tensor(lhs.arr5D.map {$0.map {$0.map {$0.map {$0.map {$0 * rhs}}}}})
+        return NumSwift(lhs.arr5D.map {$0.map {$0.map {$0.map {$0.map {$0 * rhs}}}}})
     }
 }
-
-let f = Tensor.zeros((2,3))
-let g = Tensor([1,2,3,4,5,6,7,8,9,10,11,12], shape_this: (2,3,2))
-let h = Tensor.zeros((2,7,8))
-let i = Tensor.ones((2,5,3))
-//print(f[0,2])
-print(h)
-//print(Tensor.matmul(h, i) + 1)
-print(Tensor.arange(5))
-
-let a = Tensor([1,2,3])
-let b = Tensor([-1,8,9])
-
