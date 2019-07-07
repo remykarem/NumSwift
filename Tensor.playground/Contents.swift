@@ -148,13 +148,13 @@ struct NumSwift: CustomStringConvertible {
         self.shape_ = [0]
         self.dim = Mirror(reflecting: shape).children.count
         if self.dim == 2 {
-            self.arr2D = reshape_1_to_2(object, shape: shape as! (Int,Int))
+            self.arr2D = reshape_1_to_2(object, shape: shape as! Tuple2DInt)
         } else if self.dim == 3 {
-            self.arr3D = reshape_1_to_3(object, shape: shape as! (Int,Int,Int))
+            self.arr3D = reshape_1_to_3(object, shape: shape as! Tuple3DInt)
         } else if self.dim == 4 {
-            self.arr4D = reshape_1_to_4(object, shape: shape as! (Int,Int,Int,Int))
+            self.arr4D = reshape_1_to_4(object, shape: shape as! Tuple4DInt)
         } else if self.dim == 5 {
-            self.arr5D = reshape_1_to_5(object, shape: shape as! (Int,Int,Int,Int,Int))
+            self.arr5D = reshape_1_to_5(object, shape: shape as! Tuple5DInt)
         } else {
             print("Not supported")
         }
@@ -453,3 +453,19 @@ func * (lhs: NumSwift, rhs: Int) -> NumSwift {
         return NumSwift(lhs.arr5D.map {$0.map {$0.map {$0.map {$0.map {$0 * rhs}}}}})
     }
 }
+
+let t = NumSwift.randint(1,9,(2,3,6))
+print("Tensor:\n\(t)")
+print()
+print("Value at position 1,0,4: \(t[1,0,4])")
+
+//Tensor:
+//array([[[9, 2, 5, 7, 6, 2],
+//[6, 1, 3, 4, 5, 1],
+//[9, 9, 7, 6, 1, 5],
+//
+//[[6, 7, 3, 1, 2, 8],
+//[2, 4, 8, 7, 2, 2],
+//[4, 5, 6, 8, 3, 1]]])
+//
+//Value at position 1,0,4: 2
